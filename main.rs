@@ -2,6 +2,7 @@ use std::env;
 use std::fmt;
 use std::fs;
 use std::process::{exit, ExitCode};
+use std::marker::PhantomData;
 mod raylib;
 
 #[allow(nonstandard_style)]
@@ -47,13 +48,14 @@ fn parse_ppm_image(ppm_file: &str) -> PPM_Image {
     }
 }
 
-fn ppm_image_to_rl_image(ppm_image: &mut PPM_Image) -> raylib::Image {
+fn ppm_image_to_rl_image(ppm_image: &mut PPM_Image) -> raylib::Image<'_> {
     raylib::Image {
         data: ppm_image.pixels.as_mut_ptr().cast(),
         width: ppm_image.width.into(),
         height: ppm_image.height.into(),
         mipmaps: 1,
         format: 4,
+        marker: PhantomData,
     }
 }
 
@@ -85,7 +87,7 @@ fn main() -> ExitCode {
     while !raylib::window_should_close() {
         raylib::begin_drawing();
         raylib::clear_background(raylib::get_color(0x09090FFF));
-        raylib::draw_texture(texture.clone(), pos_x, pos_y, raylib::get_color(0xFFFFFFFF));
+        raylib::draw_texture(texture, pos_x, pos_y, raylib::get_color(0xFFFFFFFF));
         raylib::end_drawing();
     }
     raylib::close_window();

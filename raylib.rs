@@ -1,6 +1,7 @@
 #![allow(unused)]
 use std::ffi::{c_void, CString};
 use std::os::raw::c_char;
+use std::marker::PhantomData;
 
 #[repr(C)]
 pub struct Color {
@@ -11,7 +12,7 @@ pub struct Color {
 }
 
 #[repr(C)]
-#[derive(Clone)]
+#[derive(Clone, Copy)]
 pub struct Texture {
     pub id: u32,
     pub width: i32,
@@ -24,12 +25,13 @@ type Texture2D = Texture;
 
 #[derive(Debug)]
 #[repr(C)]
-pub struct Image {
+pub struct Image<'a> {
     pub data: *mut c_void,
     pub width: i32,
     pub height: i32,
     pub mipmaps: i32,
     pub format: i32,
+    pub marker: PhantomData<&'a c_void>
 }
 
 #[link(name = "raylib", kind = "dylib")]
